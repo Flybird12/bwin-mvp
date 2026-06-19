@@ -5,6 +5,7 @@ function App() {
   const [workers, setWorkers] = useState([]);
   const [jobs, setJobs] = useState([]);
   const [matches, setMatches] = useState(null);
+  const [careerAdvice, setCareerAdvice] = useState(null);
 
   const [workerForm, setWorkerForm] = useState({
     name: "",
@@ -37,6 +38,17 @@ function App() {
         `http://127.0.0.1:8000/match-jobs/${workerId}`
       );
       setMatches(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const getCareerAdvice = async (workerId) => {
+    try {
+      const res = await axios.get(
+        `http://127.0.0.1:8000/career-advice/${workerId}`
+      );
+      setCareerAdvice(res.data);
     } catch (err) {
       console.error(err);
     }
@@ -108,10 +120,7 @@ function App() {
           placeholder="Name"
           value={workerForm.name}
           onChange={(e) =>
-            setWorkerForm({
-              ...workerForm,
-              name: e.target.value,
-            })
+            setWorkerForm({ ...workerForm, name: e.target.value })
           }
         />
         <br /><br />
@@ -121,10 +130,7 @@ function App() {
           placeholder="Age"
           value={workerForm.age}
           onChange={(e) =>
-            setWorkerForm({
-              ...workerForm,
-              age: e.target.value,
-            })
+            setWorkerForm({ ...workerForm, age: e.target.value })
           }
         />
         <br /><br />
@@ -133,10 +139,7 @@ function App() {
           placeholder="Location"
           value={workerForm.location}
           onChange={(e) =>
-            setWorkerForm({
-              ...workerForm,
-              location: e.target.value,
-            })
+            setWorkerForm({ ...workerForm, location: e.target.value })
           }
         />
         <br /><br />
@@ -145,17 +148,12 @@ function App() {
           placeholder="Skill"
           value={workerForm.skill}
           onChange={(e) =>
-            setWorkerForm({
-              ...workerForm,
-              skill: e.target.value,
-            })
+            setWorkerForm({ ...workerForm, skill: e.target.value })
           }
         />
         <br /><br />
 
-        <button type="submit">
-          Add Worker
-        </button>
+        <button type="submit">Add Worker</button>
       </form>
 
       <hr />
@@ -167,10 +165,7 @@ function App() {
           placeholder="Job Title"
           value={jobForm.title}
           onChange={(e) =>
-            setJobForm({
-              ...jobForm,
-              title: e.target.value,
-            })
+            setJobForm({ ...jobForm, title: e.target.value })
           }
         />
         <br /><br />
@@ -179,10 +174,7 @@ function App() {
           placeholder="Company"
           value={jobForm.company}
           onChange={(e) =>
-            setJobForm({
-              ...jobForm,
-              company: e.target.value,
-            })
+            setJobForm({ ...jobForm, company: e.target.value })
           }
         />
         <br /><br />
@@ -191,10 +183,7 @@ function App() {
           placeholder="Location"
           value={jobForm.location}
           onChange={(e) =>
-            setJobForm({
-              ...jobForm,
-              location: e.target.value,
-            })
+            setJobForm({ ...jobForm, location: e.target.value })
           }
         />
         <br /><br />
@@ -216,17 +205,12 @@ function App() {
           placeholder="Salary"
           value={jobForm.salary}
           onChange={(e) =>
-            setJobForm({
-              ...jobForm,
-              salary: e.target.value,
-            })
+            setJobForm({ ...jobForm, salary: e.target.value })
           }
         />
         <br /><br />
 
-        <button type="submit">
-          Add Job
-        </button>
+        <button type="submit">Add Job</button>
       </form>
 
       <hr />
@@ -248,10 +232,15 @@ function App() {
           <p>Location: {worker.location}</p>
           <p>Age: {worker.age}</p>
 
-          <button
-            onClick={() => findMatches(worker.id)}
-          >
+          <button onClick={() => findMatches(worker.id)}>
             Find Matching Jobs
+          </button>
+
+          <button
+            onClick={() => getCareerAdvice(worker.id)}
+            style={{ marginLeft: "10px" }}
+          >
+            Career Advice
           </button>
         </div>
       ))}
@@ -266,9 +255,7 @@ function App() {
             {matches.worker.name} ({matches.worker.skill})
           </h3>
 
-          <p>
-            Total Matches: {matches.total_matches}
-          </p>
+          <p>Total Matches: {matches.total_matches}</p>
 
           {matches.matched_jobs.map((job) => (
             <div
@@ -285,6 +272,41 @@ function App() {
               <p>Salary: ₹{job.salary}</p>
             </div>
           ))}
+        </div>
+      )}
+
+      <hr />
+
+      <h2>Career Advice</h2>
+
+      {careerAdvice && (
+        <div
+          style={{
+            border: "2px solid orange",
+            padding: "15px",
+            marginBottom: "20px",
+          }}
+        >
+          <h3>
+            {careerAdvice.worker} ({careerAdvice.skill})
+          </h3>
+
+          <h4>Recommended Skills</h4>
+          <ul>
+            {careerAdvice.advice.next_skills.map((skill) => (
+              <li key={skill}>{skill}</li>
+            ))}
+          </ul>
+
+          <h4>Salary Growth</h4>
+          <p>{careerAdvice.advice.salary_growth}</p>
+
+          <h4>Target Companies</h4>
+          <ul>
+            {careerAdvice.advice.companies.map((company) => (
+              <li key={company}>{company}</li>
+            ))}
+          </ul>
         </div>
       )}
 
