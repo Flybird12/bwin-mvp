@@ -23,19 +23,19 @@ function App() {
   });
 
   const fetchWorkers = async () => {
-    const res = await axios.get("https://bwin-api.onrender.com/workers");
+    const res = await axios.get("http://127.0.0.1:8000/workers");
     setWorkers(res.data);
   };
 
   const fetchJobs = async () => {
-    const res = await axios.get("https://bwin-api.onrender.com/jobs");
+    const res = await axios.get("http://127.0.0.1:8000/jobs");
     setJobs(res.data);
   };
 
   const findMatches = async (workerId) => {
     try {
       const res = await axios.get(
-        `https://bwin-api.onrender.com/match-jobs/${workerId}`
+        `http://127.0.0.1:8000/match-jobs/${workerId}`
       );
       setMatches(res.data);
     } catch (err) {
@@ -46,7 +46,7 @@ function App() {
   const getCareerAdvice = async (workerId) => {
     try {
       const res = await axios.get(
-        `https://bwin-api.onrender.com/career-advice/${workerId}`
+        `http://127.0.0.1:8000/career-advice/${workerId}`
       );
       setCareerAdvice(res.data);
     } catch (err) {
@@ -62,7 +62,7 @@ function App() {
   const addWorker = async (e) => {
     e.preventDefault();
 
-    await axios.post("https://bwin-api.onrender.com/workers", {
+    await axios.post("http://127.0.0.1:8000/workers", {
       ...workerForm,
       age: parseInt(workerForm.age),
     });
@@ -80,7 +80,7 @@ function App() {
   const addJob = async (e) => {
     e.preventDefault();
 
-    await axios.post("https://bwin-api.onrender.com/jobs", {
+    await axios.post("http://127.0.0.1:8000/jobs", {
       ...jobForm,
       salary: parseInt(jobForm.salary),
     });
