@@ -9,6 +9,20 @@ function App() {
   const [matches, setMatches] = useState(null);
   const [careerAdvice, setCareerAdvice] = useState(null);
 
+const [resumeFile, setResumeFile] = useState(null);
+const [resumeData, setResumeData] = useState(null);
+
+const uploadResume = async (e) => {
+  e.preventDefault();
+  if (!resumeFile) return;
+  const formData = new FormData();
+  formData.append("file", resumeFile);
+  const res = await axios.post(`${API}/upload-resume`, formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+  setResumeData(res.data);
+};
+
   const [workerForm, setWorkerForm] = useState({
     name: "",
     age: "",
@@ -202,6 +216,31 @@ function App() {
 
         <button type="submit">Create Job</button>
       </form>
+
+
+<hr />
+
+<h2>Resume Upload</h2>
+
+<form onSubmit={uploadResume}>
+  <input
+    type="file"
+    accept=".pdf,.doc,.docx,.txt"
+    onChange={(e)=>setResumeFile(e.target.files[0])}
+  />
+  <br /><br />
+  <button type="submit">Upload Resume</button>
+</form>
+
+{resumeData && (
+  <div style={{border:"1px solid #999",padding:"15px",marginTop:"15px",borderRadius:"10px"}}>
+    <p><strong>Filename:</strong> {resumeData.filename}</p>
+    <p><strong>Total Skills:</strong> {resumeData.total_skills}</p>
+    <p><strong>Detected Skills:</strong>{" "}{resumeData.skills.join(", ")}</p>
+    <h4>Resume Preview</h4>
+    <pre style={{whiteSpace:"pre-wrap"}}>{resumeData.resume_preview}</pre>
+  </div>
+)}
 
       <hr />
 
