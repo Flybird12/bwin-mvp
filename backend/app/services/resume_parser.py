@@ -1,8 +1,4 @@
 import fitz  # PyMuPDF
-import spacy
-
-# Load spaCy English model
-nlp = spacy.load("en_core_web_sm")
 
 KNOWN_SKILLS = [
     "python",
