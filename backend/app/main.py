@@ -14,6 +14,7 @@ Backward-compatibility note:
 """
 
 # --- Standard library -------------------------------------------------------
+import warnings
 import logging
 import os
 import re
@@ -86,6 +87,7 @@ logging.basicConfig(
     format="%(asctime)s | %(levelname)-8s | %(name)s | %(message)s",
 )
 logger = logging.getLogger("bwin")
+warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 if not OPENAI_API_KEY:
     logger.warning("OPENAI_API_KEY is not set — AI-powered features may be degraded.")
@@ -717,3 +719,70 @@ async def unhandled_exception_handler(request: Request, exc: Exception):
         status_code=500,
         content={"detail": "An unexpected error occurred. Please try again later."},
     )
+
+
+# ==============================================================================
+# DEMO DATA SEEDER (for hackathon / presentations)
+# ==============================================================================
+
+@app.post(
+    "/seed-demo-data",
+    tags=["System"],
+    summary="Seed demo workers and jobs",
+    description="Populates the database with realistic demo data for presentations. Safe to call multiple times.",
+)
+def seed_demo_data(db: Session = Depends(get_db)):
+    """Seed realistic demo workers and jobs for hackathon demos."""
+
+    demo_workers = [
+        {"name": "Ramesh Kumar", "age": 32, "location": "Bengaluru", "skill": "electrician, wiring, solar installation"},
+        {"name": "Suresh Babu", "age": 28, "location": "Chennai", "skill": "plumber, pipe fitting, drainage systems"},
+        {"name": "Anitha Devi", "age": 35, "location": "Hyderabad", "skill": "tailoring, embroidery, sewing"},
+        {"name": "Ravi Shankar", "age": 40, "location": "Mumbai", "skill": "welder, fabrication, TIG welding"},
+        {"name": "Priya Nair", "age": 26, "location": "Pune", "skill": "python, react, javascript, sql"},
+        {"name": "Mohammed Rafiq", "age": 38, "location": "Delhi", "skill": "carpenter, furniture design, woodwork"},
+        {"name": "Kavitha Reddy", "age": 29, "location": "Bengaluru", "skill": "python, machine learning, data analysis"},
+        {"name": "Sanjay Verma", "age": 45, "location": "Kolkata", "skill": "construction, civil work, project management"},
+    ]
+
+    demo_jobs = [
+        {"title": "Senior Electrician", "company": "Tata Power Solar", "location": "Bengaluru", "required_skill": "electrician, solar installation, wiring", "salary": 35000},
+        {"title": "Plumbing Supervisor", "company": "L&T Construction", "location": "Chennai", "required_skill": "plumber, pipe fitting, drainage systems", "salary": 28000},
+        {"title": "MIG Welder", "company": "BHEL", "location": "Hyderabad", "required_skill": "welder, fabrication, MIG welding", "salary": 32000},
+        {"title": "Python Developer", "company": "Infosys", "location": "Bengaluru", "required_skill": "python, sql, git", "salary": 75000},
+        {"title": "Garment Supervisor", "company": "Madura Fashion", "location": "Coimbatore", "required_skill": "tailoring, embroidery, sewing", "salary": 22000},
+        {"title": "Site Carpenter", "company": "Prestige Group", "location": "Bengaluru", "required_skill": "carpenter, carpentry, woodwork", "salary": 26000},
+        {"title": "ML Engineer", "company": "Flipkart", "location": "Bengaluru", "required_skill": "python, machine learning, data analysis", "salary": 120000},
+        {"title": "Construction Foreman", "company": "DLF Limited", "location": "Gurugram", "required_skill": "construction, civil work, project management", "salary": 45000},
+        {"title": "Industrial Electrician", "company": "Siemens India", "location": "Pune", "required_skill": "electrician, plc, automation", "salary": 42000},
+        {"title": "React Developer", "company": "Razorpay", "location": "Bengaluru", "required_skill": "react, javascript, sql", "salary": 90000},
+    ]
+
+    added_workers = 0
+    added_jobs = 0
+
+    try:
+        existing_workers = db.query(WorkerDB).count()
+        if existing_workers == 0:
+            for w in demo_workers:
+                db.add(WorkerDB(**w))
+            added_workers = len(demo_workers)
+
+        existing_jobs = db.query(JobDB).count()
+        if existing_jobs == 0:
+            for j in demo_jobs:
+                db.add(JobDB(**j))
+            added_jobs = len(demo_jobs)
+
+        db.commit()
+    except SQLAlchemyError as exc:
+        db.rollback()
+        logger.error("Failed to seed demo data: %s", exc)
+        raise HTTPException(status_code=500, detail="Failed to seed demo data.")
+
+    return {
+        "message": "Demo data seeded successfully",
+        "workers_added": added_workers,
+        "jobs_added": added_jobs,
+        "note": "Data only added if tables were empty."
+    }
