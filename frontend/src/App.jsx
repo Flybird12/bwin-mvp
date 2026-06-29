@@ -141,7 +141,7 @@ function App() {
       const res = await fetch(`${API_BASE}/jobs`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(jobForm),
+        body: JSON.stringify({ ...jobForm, salary: Number(jobForm.salary) }),
       });
 
       setJobForm({
