@@ -29,7 +29,7 @@ function App() {
   const [workers, setWorkers] = useState([]);
   const [jobs, setJobs] = useState([]);
   const [matches, setMatches] = useState(null);
-  const [careerData, setCareerData] = useState(null);
+  const [careerAdvice, setCareerAdvice] = useState(null);
   const [resumeData, setResumeData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState(null);
@@ -335,7 +335,7 @@ function App() {
                 <FaUserPlus /> Register Worker
               </h2>
 
-              <form onSubmit={addWorker}>
+              <form onSubmit={registerWorker}>
                 <input
                   placeholder="Full Name"
                   value={workerForm.name}
@@ -434,7 +434,7 @@ function App() {
                 <FaBriefcase /> Create Job
               </h2>
 
-              <form onSubmit={addJob}>
+              <form onSubmit={createJob}>
                 <input
                   placeholder="Job Title"
                   value={jobForm.title}
@@ -736,3 +736,4 @@ function App() {
     </div>
   );
 }
+export default App;
