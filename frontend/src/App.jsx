@@ -730,9 +730,11 @@ function App() {
                 insights here.
               </p>
             </div>
-          )}
+                    )}
         </section>
       </main>
     </div>
   );
 }
+
+export default App;
